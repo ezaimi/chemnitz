@@ -1,12 +1,26 @@
-interface Props{
-    label: string;
+import React from "react";
+
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  label: string;
+  bgColor?: string;
+  textColor?: string;
+  className?: string;
 }
 
-export default function Button({label}:Props) {
-    return (
-        <div>
-            <button className="px-4 py-1.5 border-1 rounded-2xl w-full bg-black text-white">{label}</button>
-        </div>
-    )
-
+export default function Button({
+  label,
+  bgColor = "#fc037f",
+  textColor = "#111111",
+  className = "",
+  ...rest
+}: Props) {
+  return (
+    <button
+      style={{ backgroundColor: bgColor, color: textColor }}
+      className={`px-4 flex py-2 border-1 items-center rounded-full w-full justify-center ${className}`}
+      {...rest}
+    >
+      {label}
+    </button>
+  );
 }

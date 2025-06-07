@@ -5,6 +5,7 @@ import LoginForm from "@/components/forms/LoginForm";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
 import SignupPage from "@/components/forms/SignupForm";
+import Transition from "@/components/general/Transition";
 
 
 export default function LoginPage() {
@@ -33,7 +34,7 @@ export default function LoginPage() {
     return (
       <div className="max-h-[135rem] h-[100vh] w-full flex justify-center items-center bg-[#dce5f0]"  >
         <div className="h-[35rem] w-[60rem] bg-white rounded-[25px] flex " >
-          
+
           <div className="w-[60%]  py-2 px-2  ">
             <img
               className="w-full h-full object-cover rounded-[25px] bg-red-500"
@@ -42,7 +43,9 @@ export default function LoginPage() {
           </div>
           <div className="w-[40%] py-2 pl-2">
             <div className="px-15 w-full h-full bg-[#ffffff] rounded-[25px] ">
-              <SignupPage />
+              <Transition direction="left">
+                     <SignupPage />
+              </Transition>
             </div>
           </div>
         </div>
