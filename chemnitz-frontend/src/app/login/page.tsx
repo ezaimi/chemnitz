@@ -41,7 +41,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="w-[40%] py-2 pl-2">
-            <div className="pl-4 w-full h-full bg-[#ffffff] rounded-[25px] ">
+            <div className="px-15 w-full h-full bg-[#ffffff] rounded-[25px] ">
               <SignupPage />
             </div>
           </div>
