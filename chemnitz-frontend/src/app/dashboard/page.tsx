@@ -18,10 +18,10 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     if (!token || isTokenExpired(token)) {
-      localStorage.removeItem("token"); // Remove expired or missing token
+      localStorage.removeItem("token"); 
       router.push("/login");
     } else {
       setLoading(false);
@@ -29,8 +29,8 @@ export default function DashboardPage() {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear token on logout
-    router.push("/login");
+    localStorage.removeItem("token"); 
+    router.push("/signup");
   };
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;

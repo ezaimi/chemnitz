@@ -5,22 +5,42 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   bgColor?: string;
   textColor?: string;
   className?: string;
+  startIcon?: React.ReactNode;
+  hoverBgColor?: string;   
+  hoverTextColor?: string; 
 }
 
 export default function Button({
   label,
-  bgColor = "#fc037f",
+  bgColor = "#f2f2f2",
   textColor = "#111111",
+  hoverBgColor = "#1c191b",       
+  hoverTextColor = "white", 
   className = "",
+  startIcon,
   ...rest
 }: Props) {
   return (
     <button
-      style={{ backgroundColor: bgColor, color: textColor }}
-      className={`px-4 flex py-2 border-1 items-center rounded-full w-full justify-center ${className}`}
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = hoverBgColor;
+        e.currentTarget.style.color = hoverTextColor;
+        e.currentTarget.style.cursor = "pointer";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = bgColor;
+        e.currentTarget.style.color = textColor;
+      }}
+      className={`text-white focus:outline-none focus:ring-4 font-medium rounded-full text-sm w-full py-3.5 text-center mb-2 transition duration-200 flex justify-center gap-2
+ ${className}`}
       {...rest}
     >
-      {label}
+      {startIcon && <span className="h-4">{startIcon}</span>}
+      <span>{label}</span>
     </button>
   );
 }
