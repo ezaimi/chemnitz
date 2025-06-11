@@ -1,19 +1,12 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+// src/app/page.tsx
+import Header from '@/components/general/Header'
+import Hero from '@/components/general/Hero'
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/dashboard");
-    } else {
-      router.push("/signup");
-    }
-  }, [router]);
-
-  return <p>Redirecting...</p>;
+  return (
+    <>
+      <Header />
+      <Hero />
+    </>
+  )
 }

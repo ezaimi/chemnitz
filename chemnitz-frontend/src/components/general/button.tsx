@@ -35,7 +35,7 @@ export default function Button({
         e.currentTarget.style.backgroundColor = bgColor;
         e.currentTarget.style.color = textColor;
       }}
-      className={`text-white focus:outline-none focus:ring-4 font-medium rounded-full text-sm w-full py-3.5 text-center mb-2 transition duration-200 flex justify-center gap-2
+      className={`text-white focus:outline-none font-medium rounded-full text-sm w-full py-3.5 text-center mb-2 transition duration-200 flex justify-center gap-2
  ${className}`}
       {...rest}
     >

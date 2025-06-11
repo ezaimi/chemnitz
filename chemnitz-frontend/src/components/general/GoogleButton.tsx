@@ -14,6 +14,7 @@ function GoogleButton({ label }: Props) {
       textColor="#111111"               
       hoverBgColor="#1c191b"
       hoverTextColor="white"
+      onClick={()=>{window.location.href = 'http://localhost:5000/api/auth/google'}}
     />
   );
 }
