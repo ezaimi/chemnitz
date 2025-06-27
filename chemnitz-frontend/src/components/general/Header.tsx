@@ -1,44 +1,51 @@
 'use client';
 
+import HeaderButton from './HeaderButton';
 import Button from '../general/button';
+import { useState } from "react";
+import { label } from 'framer-motion/client';
+import { HeaderItemsType } from '@/types/componentTypes';
+
+
 
 // text-transparent bg-clip-text bg-[linear-gradient(to_right,_#7fc081,_#405039)]
 
-export default function Header() {
+interface props {
+    headerItems: HeaderItemsType[]
+}
+
+
+export default function Header({headerItems} : props) {
+
+  const [activeItem, setActiveItem] = useState(headerItems[1].label);
+
+
     return (
-        <header className='px-4'>
-            <nav className=" lg:px-10  py-0 bg-red-600 flex justify-between">
+        <header className='px-4 h-[3rem]'>
+            <nav className=" lg:px-10  py-0 flex justify-between items-center">
 
-
-                <div className='bg-blue-600 flex-1'>Logo</div>
-                <div className='bg-yellow-700 flex-1'>
-                    <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-                        <li>
-                            <a href="#" className="block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white" aria-current="page">Home</a>
+                <div className=' flex-1'><p className=" text-[#1c191b] self-center  text-[20px] font-poppins font-bold whitespace-nowrap " >Discover Chemnitz</p>
+                </div> 
+                <div className=' flex-1 hidden lg:block '>
+                    <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0 justify-center">
+                       {headerItems.map((item, index) => (
+                         <li >
+                            <a onClick={() => setActiveItem(item.label)} className={`${activeItem == item.label ? 'text-red-600' : 'text-gray-950' } block cursor-pointer py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   `}>
+                               {item.label}</a>
                         </li>
-                        <li>
-                            <a href="#" className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-[#1c191b]  dark:hover:bg-gray-700 dark:hover:text-[#1c191b]  lg:dark:hover:bg-transparent dark:border-gray-700">Company</a>
-                        </li>
-                        <li>
-                            <a href="#" className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-[#1c191b] dark:hover:bg-gray-700 dark:hover:text-[#1c191b] lg:dark:hover:bg-transparent dark:border-gray-700">Marketplace</a>
-                        </li>
-                        <li>
-                            <a href="#" className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-[#1c191b] dark:hover:bg-gray-700 dark:hover:text-[#1c191b] lg:dark:hover:bg-transparent dark:border-gray-700">Features</a>
-                        </li>
-                        <li>
-                            <a href="#" className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-[#1c191b] dark:hover:bg-gray-700 dark:hover:text-[#1c191b] lg:dark:hover:bg-transparent dark:border-gray-700">Team</a>
-                        </li>
-                        <li>
-                            <a href="#" className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-[#1c191b] dark:hover:bg-gray-700 dark:hover:text-[#1c191b] lg:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-                        </li>
+                        ))}
+                       
                     </ul>
                 </div>
-                <div className="flex items-center gap-4 bg-green-600 flex-1 justify-end  py-1">
-                    <div className=" bg-amber-500 flex justify-center items-center"> 
-                        <Button label="Log In" className=' !w-20 !h-10 py-2 !px-2 text-xs' />
+                <div className="flex items-center gap-4 flex-1 justify-end  py-2">
+                    <div className="flex justify-center items-center" >
+                        <HeaderButton label="Log In" className=' px-6 py-1.5 text-xs' />
                     </div>
-                    <div className=" bg-amber-500 flex justify-center items-center">
-                        <Button label="Sign In" className=' !w-20 !h-10 !py-2 !px-2 text-xs'/>
+                    <div className="  flex justify-center items-center">
+                        <HeaderButton label="Sign In" className=' px-6 py-1.5 text-xs' />
+                    </div>
+                    <div className='lg:hidden'>
+                        more
                     </div>
                 </div>
 
