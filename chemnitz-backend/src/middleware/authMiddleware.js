@@ -1,25 +1,24 @@
+const { verifyToken } = require('../utils/jwtConfig');
 
+function authenticateJWT(req, res, next) {
+  console.log("here");
 
-const jwt = require('jsonwebtoken');
-
-const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;  // decoded contains userId, email, role
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'Token is not valid' });
+  const token = req.cookies['accessToken'];
+  if (!token) {
+    return res.status(401).json({ message: 'Not authenticated' });
   }
-};
 
-const adminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Admin access required' });
+  const payload = verifyToken(token);
+  if (!payload) {
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
+
+  req.user = {
+    email: payload.email,
+    roles: payload.roles,
+  };
+
   next();
-};
+}
 
-module.exports = { authMiddleware, adminOnly };
+module.exports = { authenticateJWT };

@@ -1,11 +1,15 @@
+
 require('dotenv').config();  // to load .env variables
 const express = require('express');
 const connectDB = require('./config/db');  // path to your connection file
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
 
 // const testRoute = require('./routes/testRoute');
 
 const authRoutes = require('./routes/authRoutes');
+const userRoute = require('./routes/userRoute');
 
 
 const app = express();
@@ -15,17 +19,20 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true, // if you use cookies or auth headers
+  credentials: true, 
 }));
 
 // Connect to MongoDB
 connectDB();
 
-app.use(express.json());  // For parsing JSON requests
+app.use(express.json());  
+app.use(cookieParser()); 
+
 
 // Your routes go here...
-// app.use('/api/test', testRoute);
+
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoute);
 
 
 
