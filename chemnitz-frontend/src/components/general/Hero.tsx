@@ -1,64 +1,59 @@
+'use client';
 
+import { useState, useEffect } from 'react';
+
+const images = [
+  '/assets/image/main/chemnitz-foto1.png',
+  '/assets/image/main/chemnitz-foto2.png',
+  '/assets/image/main/chemnitz-foto3.png',
+];
 
 export default function Hero() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
+    <main className="relative h-[calc(100vh-3rem)] p-3 pt-0 overflow-hidden ">
+      <div className=" absolute inset-0  rounded-2xl overflow-hidden left-3 right-3 bottom-3 ">
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`
+              absolute inset-0 p-3 bg-cover bg-center transition-all duration-[4000ms] ease-[cubic-bezier(0.4,0,0.2,1)]
+              ${index === currentImageIndex ? 'opacity-100 scale-105 z-10' : 'opacity-0 scale-100 z-0'}
+            `}
+            style={{ backgroundImage: `url('${image}')` }}
+          />
+        ))}
+      </div>
 
-    <main className="h-[calc(100vh-3rem)] p-3 ">
 
-      <div
-        className="bg-cover bg-center h-full w-full rounded-2xl"
-        style={{ backgroundImage: `url('/assets/image/chbg.png')` }}
-      >
-         <section className="h-full flex flex-col justify-center px-10 text-white text-left max-w-4xl">
-        <h1 className="text-5xl sm:text-6xl font-bold leading-tight">
-          Explore the sights<br />
-          of the Azores
-        </h1>
-        <p className="text-lg mt-4">A place where nature and adventure unite</p>
-        <button className="mt-8 bg-white text-black px-6 py-3 rounded-full text-sm font-semibold shadow-lg hover:bg-gray-100 transition">
-          Book now
-        </button>
-      </section>
+      <section className="relative z-20 w-full h-full flex items-center justify-center text-white">
+        <div className="absolute inset-0 z-0 flex items-center justify-center">
+          <div className="w-[100%] h-[100%] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(0,0,0,0.5)_0%,_rgba(0,0,0,0)_70%)]" />
         </div>
-        </main>
 
-    // <main className="relative h-screen overflow-hidden">
-    //   {/* Background Image */}
-    //   <div className="absolute inset-0 -z-10">
-    //     <img
-    //       src="/assets/image/chbg.png"
-    //       alt="Azores landscape"
-    //       className="object-cover "
-    //     />
-    //   </div>
-
-    //   {/* Hero Content */}
-      // <section className="h-full flex flex-col justify-center px-10 text-white text-left max-w-4xl">
-      //   <h1 className="text-5xl sm:text-6xl font-bold leading-tight">
-      //     Explore the sights<br />
-      //     of the Azores
-      //   </h1>
-      //   <p className="text-lg mt-4">A place where nature and adventure unite</p>
-      //   <button className="mt-8 bg-white text-black px-6 py-3 rounded-full text-sm font-semibold shadow-lg hover:bg-gray-100 transition">
-      //     Book now
-      //   </button>
-      // </section>
-
-    //   {/* Scroll Indicator */}
-    //   <div className="absolute bottom-6 right-6 flex items-center space-x-2 text-white text-sm">
-    //     <span>Scroll down</span>
-    //     <div className="w-6 h-6 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-    //       <svg
-    //         className="w-4 h-4"
-    //         fill="none"
-    //         stroke="white"
-    //         strokeWidth="2"
-    //         viewBox="0 0 24 24"
-    //       >
-    //         <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
-    //       </svg>
-    //     </div>
-    //   </div>
-    // </main>
+        <div className="relative z-10 text-center max-w-2xl px-4">
+          <p className="text-3xl font-serif">It's time to</p>
+          <p className="text-5xl sm:text-6xl font-serif mt-2">Visit Chemnitz</p>
+          <p className="text-sm mt-4 font-serif text-[#eae4e4]">
+            A place where nature and adventure unite. A place where nature and
+            adventure unite. A place where nature and adventure unite. A place where
+            nature and adventure unite. A place where nature and adventure unite.
+          </p>
+          <button className="mt-8  text-white border px-14 py-3 rounded-full text-sm font-semibold shadow-lg cursor-pointer hover:bg-white hover:text-black hover:border-transparent">
+            Book now
+          </button>
+        </div>
+      </section>
+    </main>
   );
 }

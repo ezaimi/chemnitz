@@ -1,17 +1,25 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginForm from "@/components/forms/LoginForm";
 import SignupPage from "@/components/forms/SignupForm";
 import Transition from "@/components/general/Transition";
 import MainLoginForm from "@/components/forms/MainLoginForm";
-
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState("main");
+  const searchParams = useSearchParams();
+  const form = searchParams.get("form");
+
+  useEffect(() => {
+    if (form === "signup") {
+      setActiveForm(form);
+    }
+  }, [form]);
 
   return (
-    <div className="max-h-[135rem] h-[100vh] w-full flex justify-center items-center bg-[#dce5f0] ">
+    <div className="max-h-[135rem] h-[100vh] w-full flex justify-center items-center bg-[url('/assets/image/bg-login.png')] bg-cover bg-center">
       <div className="h-[35rem] w-[50rem] bg-white rounded-[25px] flex mx-6 xs:max-w-[5rem] sm:max-w-[25rem] lg:max-w-[50rem]">
         <div className="hidden w-[52%] p-2 lg:block">
           <img
@@ -27,15 +35,11 @@ export default function LoginPage() {
                 {activeForm === "main" && <MainLoginForm setActiveForm={setActiveForm} />}
                 {activeForm === "login" && <LoginForm setActiveForm={setActiveForm} />}
                 {activeForm === "signup" && <SignupPage setActiveForm={setActiveForm} />}
-
               </div>
             </Transition>
           </div>
         </div>
       </div>
-
     </div>
   );
 }
-
-
