@@ -46,7 +46,7 @@ function Menu({
   const positionClass = position === 'left' ? 'left-0' : 'right-0';
 
   return (
-    <div className="relative flex items-center" ref={menuRef}>
+    <div className="relative flex items-center z-50" ref={menuRef}>
       <button
         className="inline-flex items-center text-sm font-medium text-center"
         onClick={toggleDropdown}

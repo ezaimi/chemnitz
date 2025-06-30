@@ -50,7 +50,7 @@ export default function Hero() {
             nature and adventure unite. A place where nature and adventure unite.
           </p>
           <button className="mt-8  text-white border px-14 py-3 rounded-full text-sm font-semibold shadow-lg cursor-pointer hover:bg-white hover:text-black hover:border-transparent">
-            Book now
+            See Attractions
           </button>
         </div>
       </section>

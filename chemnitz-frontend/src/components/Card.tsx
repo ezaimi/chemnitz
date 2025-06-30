@@ -14,7 +14,10 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Feature } from '@/types/Features';
+import { getFeatureProperties } from '@/utilities/getFeatureProperties';
 
+// Expand More Button styles
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
@@ -30,14 +33,16 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
+// Custom Card Component
 interface CustomCardProps {
-  title: string;
-  img: string;
+  features: Feature;
+  selectedCategory: string;
 }
 
-export default function CustomCard({ title, img }: CustomCardProps) {
+export default function CustomCard({ features, selectedCategory }: CustomCardProps) {
   const [expanded, setExpanded] = React.useState(false);
   const [favorited, setFavorited] = React.useState(false);
+  const featureProperties = getFeatureProperties(features, selectedCategory);
 
   const handleExpandClick = () => {
     setExpanded((prev) => !prev);
@@ -51,7 +56,7 @@ export default function CustomCard({ title, img }: CustomCardProps) {
   return (
     <Card
       sx={{
-        width: expanded ? 350 : 250,
+        width: '100%',
         height: 400,
         borderRadius: 3,
         transition: 'width 0.4s ease-in-out',
@@ -59,6 +64,7 @@ export default function CustomCard({ title, img }: CustomCardProps) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        maxWidth: '25rem',
       }}
     >
       <div>
@@ -74,8 +80,8 @@ export default function CustomCard({ title, img }: CustomCardProps) {
           }}
         >
           <img
-            src={img}
-            alt={title}
+            src={'assets/image/chbg.png'}
+            alt={'title'}
             style={{
               width: '100%',
               height: '100%',
@@ -83,37 +89,6 @@ export default function CustomCard({ title, img }: CustomCardProps) {
               borderRadius: 'inherit',
             }}
           />
-
-          {/* Favorite Icon Box */}
-          <Box
-            onClick={handleFavoriteClick}
-            sx={{
-              position: 'absolute',
-              top: 13,
-              right: '5%',
-              width: 30,
-              height: 30,
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              userSelect: 'none',
-            }}
-          >
-            {favorited ? (
-              <FavoriteIcon
-                fontSize="small"
-                sx={{ fontSize: 16, color: 'red', opacity: 0.9 }}
-              />
-            ) : (
-              <FavoriteBorderIcon
-                fontSize="small"
-                sx={{ fontSize: 16, color: 'black', opacity: 0.9 }}
-              />
-            )}
-          </Box>
         </CardMedia>
 
         <CardContent
@@ -134,8 +109,152 @@ export default function CustomCard({ title, img }: CustomCardProps) {
               margin: 0,
             }}
           >
-            {title}
+            {featureProperties.name}
           </Typography>
+
+          {/* Conditionally Render Based on Category Type */}
+          {selectedCategory === 'restaurant' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Opening Hours: </strong>{featureProperties.openingHours}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Cuisine: </strong>{featureProperties.cuisine}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Phone: </strong>{featureProperties.phone}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'museum' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Opening Hours: </strong>{featureProperties.openingHours}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Fee: </strong>{featureProperties.fee}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Description: </strong>{featureProperties.description}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'gallery' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Opening Hours: </strong>{featureProperties.openingHours}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Fee: </strong>{featureProperties.fee}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'artwork' && (
+            <>
+              <Typography variant="body2">
+                <strong>Artist: </strong>{featureProperties.artistName}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Material: </strong>{featureProperties.material}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Fee: </strong>{featureProperties.fee}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'guest_house' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Phone: </strong>{featureProperties.phone}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Indoor Seating: </strong>{featureProperties.indoorSeating}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Dietary Options: </strong>{featureProperties.dietaryOptions}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'hotel' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Phone: </strong>{featureProperties.phone}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Rooms: </strong>{featureProperties.rooms}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'bench' && (
+            <>
+              <Typography variant="body2">
+                <strong>Artist: </strong>{featureProperties.artistName}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Material: </strong>{featureProperties.material}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'theatre' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Opening Hours: </strong>{featureProperties.openingHours}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Description: </strong>{featureProperties.description}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'clock' && (
+            <>
+              <Typography variant="body2">
+                <strong>Display: </strong>{featureProperties.display}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Type: </strong>{featureProperties.type}
+              </Typography>
+            </>
+          )}
+
+          {selectedCategory === 'deli' && (
+            <>
+              <Typography variant="body2">
+                <strong>Address: </strong>{featureProperties.address}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Opening Hours: </strong>{featureProperties.openingHours}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Cuisine: </strong>{featureProperties.cuisine}
+              </Typography>
+            </>
+          )}
         </CardContent>
       </div>
 
@@ -149,17 +268,6 @@ export default function CustomCard({ title, img }: CustomCardProps) {
           padding: '0.5rem 1rem',
         }}
       >
-        <IconButton
-          aria-label="add to favorites"
-          onClick={handleFavoriteClick}
-        >
-          {favorited ? (
-            <FavoriteIcon sx={{ color: 'red' }} />
-          ) : (
-            <FavoriteBorderIcon />
-          )}
-        </IconButton>
-
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
