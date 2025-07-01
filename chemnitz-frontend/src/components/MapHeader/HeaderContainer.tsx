@@ -13,15 +13,16 @@ const itemsToRender:MenuItemType[] = [
 
 interface HeaderContainerProps {
     onFilterChange: (category: string) => void;
+      onSuggestionSelect: (featureId: string) => void;
 }
-function HeaderContainer({ onFilterChange }:HeaderContainerProps) {
+function HeaderContainer({ onFilterChange, onSuggestionSelect }:HeaderContainerProps) {
     return (
         <div className="w-full h-full flex items-center justify-between">
-            <div className="hidden lg:block">
-                <Filter onFilterChange={onFilterChange} /> {/* Pass handler to Filter */}
+            <div className=" hidden lg:block">
+                <Filter onFilterChange={onFilterChange} /> 
             </div>
 
-            <div className="block lg:hidden">
+            <div className="block lg:hidden ">
                 <Menu
                     menuItems={itemsToRender}
                     MenuIconComponent={<MenuOutlinedIcon />}
@@ -32,7 +33,7 @@ function HeaderContainer({ onFilterChange }:HeaderContainerProps) {
                 />
             </div>
 
-            <div><Search /></div>
+            <div><Search onSuggestionSelect= {onSuggestionSelect}/></div>
         </div>
     )
 }

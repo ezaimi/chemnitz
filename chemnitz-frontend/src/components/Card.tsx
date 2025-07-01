@@ -9,7 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { Feature } from '@/types/Features';
-import { getFeatureProperties } from '@/utilities/getFeatureProperties';
+import { getFeatureProperties } from '@/utilities/featureHelper';
 import Favourite from './general/Favourite';
 import VisitSite from './general/VisitSite';
 import Dialog from '@mui/material/Dialog';
@@ -18,32 +18,28 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import Rate from './general/Rate'; // Import your custom Rate component
-import CustomPopover from './general/CustomPopover'; 
+import CustomPopover from './general/CustomPopover';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Popover } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import MakeReview from './general/MakeReview';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+import LocationButton from './general/LocationButton';
+import { formatAddress } from '@/utilities/featureHelper';
 
 // Expand More Button styles
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
 
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})<ExpandMoreProps>(({ theme, expand }) => ({
-  marginLeft: 'auto',
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
 
-// Custom Card Component
 interface CustomCardProps {
   features: Feature;
   selectedCategory: string;
+  onLocationClick: (id: string) => void;
 }
 
-export default function CustomCard({ features, selectedCategory }: CustomCardProps) {
+export default function CustomCard({ features, selectedCategory, onLocationClick }: CustomCardProps) {
   const [expanded, setExpanded] = React.useState(false);
   const [favorited, setFavorited] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -51,17 +47,27 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
   const [anchorElDesc, setAnchorElDesc] = React.useState<HTMLElement | null>(null);
   const [isNameTruncated, setIsNameTruncated] = React.useState(false);
   const [isDescTruncated, setIsDescTruncated] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [showReview, setShowReview] = React.useState(false);
+
+
   const featureProperties = getFeatureProperties(features, selectedCategory);
   const nameRef = React.useRef<HTMLSpanElement>(null);
   const descRef = React.useRef<HTMLSpanElement>(null);
 
   // Handle truncation detection for title and description
   React.useEffect(() => {
+  setTimeout(() => {
     const elName = nameRef.current;
-    if (elName) setIsNameTruncated(elName.scrollWidth > elName.clientWidth + 2);
+    if (elName) {
+      setIsNameTruncated(Math.floor(elName.scrollWidth) > Math.floor(elName.clientWidth));
+    }
     const elDesc = descRef.current;
-    if (elDesc) setIsDescTruncated(elDesc.scrollHeight > elDesc.clientHeight + 2);
-  }, [featureProperties.name, featureProperties.description]);
+    if (elDesc) {
+      setIsDescTruncated(Math.floor(elDesc.scrollHeight) > Math.floor(elDesc.clientHeight));
+    }
+  }, 0);
+}, [featureProperties.name, featureProperties.description]);
 
   const handleExpandClick = () => {
     setExpanded((prev) => !prev);
@@ -73,7 +79,7 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
   };
 
   const handleButtonClick = () => {
-    console.log('Button clicked');
+    onLocationClick(features.id);
   };
 
   const handleDescriptionClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -83,7 +89,10 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
   };
 
   const handleTitleClick = (event: React.MouseEvent<HTMLElement>) => {
+    console.log("clicked title, isNameTruncated:", isNameTruncated);
+
     if (isNameTruncated) {
+      
       setAnchorElName(event.currentTarget);
     }
   };
@@ -95,11 +104,28 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
   const hasExternalLink = typeof website === 'string' && website.length > 0;
 
   const handleVisitSiteClick = () => {
-    // Only open the link if it is a valid string
     if (hasExternalLink) {
-      window.open(website, '_blank'); // Open the external link in a new tab
+      window.open(website, '_blank');
     }
   };
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAddReviewClick = () => {
+    setShowReview(true);
+    handlePopoverClose();
+  };
+
+ 
+
+
+
 
   return (
     <Card
@@ -111,6 +137,7 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
         flexDirection: 'column',
         justifyContent: 'space-between',
         maxWidth: '25rem',
+        minHeight: '26rem'
       }}
     >
       <div>
@@ -149,10 +176,10 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
             paddingBottom: '8px',
             paddingLeft: '16px',
             paddingRight: '16px',
-            flexGrow: 1, // Ensure the content takes up remaining space, pushing the button down
+            flexGrow: 1, 
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center', // Aligns the title and rating horizontally
+            alignItems: 'center', 
           }}
         >
           <Typography
@@ -163,9 +190,9 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
               borderRadius: '4px',
               fontSize: '1.5rem',
               margin: 0,
-              cursor: isNameTruncated ? 'pointer' : 'default',
+              cursor: 'pointer',
               display: '-webkit-box',
-              WebkitLineClamp: 1, // Limit title to 1 line
+              WebkitLineClamp: 1, 
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -176,7 +203,9 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
             {featureProperties.name}
           </Typography>
 
-          <MoreVertIcon fontSize="small" />
+          <IconButton onClick={handlePopoverOpen}>
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
 
         </CardContent>
 
@@ -196,8 +225,9 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
               fontSize: '0.9rem',
             }}
           >
-            {featureProperties.address ? featureProperties.address : 'Address not provided'}
+            {formatAddress(featureProperties.address)}
           </Typography>
+
 
           <Typography
             variant="body2"
@@ -221,7 +251,6 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
         </CardContent>
       </div>
 
-      {/* Button at the bottom of the card */}
       <CardActions
         disableSpacing
         sx={{
@@ -231,41 +260,32 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
           marginTop: 'auto', // Ensure the button is pushed to the bottom
         }}
       >
-        <button
-          onClick={handleButtonClick}
-          style={{
-            backgroundColor: '#1c191b',
-            color: 'white',
-            borderRadius: '50px',
-            width: '50%',
-            height: '40px',
-            fontSize: '1rem',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            transition: 'all 0.3s ease',
-            border: '1px solid #1c191b',
-            marginBottom: '10px',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'white';
-            e.currentTarget.style.color = '#1c191b';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#1c191b';
-            e.currentTarget.style.color = 'white';
-          }}
-          className="text-white focus:outline-none font-medium rounded-full border-1 border-[1c191b] text-sm text-center transition duration-200 flex justify-center gap-2"
-        >
-          Learn More
-        </button>
+        <LocationButton handleButtonClick={handleButtonClick} />
 
         {/* Star Rating with Score */}
-        <Rate rate={0} /> {/* Display rate with a score of 0 */}
+        <Rate rate={0} />
+
+        {/* Display rate with a score of 0 */}
       </CardActions>
 
-      {/* Popovers for title and description */}
+
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={handleAddReviewClick}>Make a Review</MenuItem>
+      </Popover>
+
+
       <CustomPopover
         open={Boolean(anchorElName)}
         anchorEl={anchorElName}
@@ -296,6 +316,9 @@ export default function CustomCard({ features, selectedCategory }: CustomCardPro
           </Button>
         </DialogActions>
       </Dialog>
+
+      {showReview && <MakeReview onClose={() => setShowReview(false)} />}
+
     </Card>
   );
 }

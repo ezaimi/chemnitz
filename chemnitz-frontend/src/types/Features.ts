@@ -19,3 +19,8 @@ export interface Feature {
   properties: FeatureProperties;
   geometry: { type: string; coordinates: [number, number] };
 }
+
+export interface Suggestion {
+  id: string;
+  name: string;
+}

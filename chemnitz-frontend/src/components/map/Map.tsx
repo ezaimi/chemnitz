@@ -1,43 +1,79 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import InfoPanel from './InfoPanel';
 import { Feature } from '@/types/Features';
+import CustomPopup from './CustomPopup';
 
 interface MapProps {
   features: Feature[];
+  selectedFeatureId: string | null;
 }
 
-const Map = ({ features }: MapProps) => {
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
+function FlyToSelected({
+  features,
+  selectedFeatureId,
+  popupRefs,
+}: {
+  features: Feature[];
+  selectedFeatureId: string | null;
+  popupRefs: React.MutableRefObject<Record<string, L.Popup | null>>;
+}) {
+  const map = useMap();
 
   useEffect(() => {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl:
-      'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-    iconUrl:
-      'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl:
-      'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  });
-}, []);
+    if (selectedFeatureId) {
+      const selected = features.find((f) => f.id === selectedFeatureId);
+      if (!selected) return;
 
+      const coords = selected.geometry.coordinates;
+      if (Array.isArray(coords) && coords.length === 2) {
+        const [lng, lat] = coords;
+        map.flyTo([lat, lng], 15, { duration: 1.5 });
+
+        const tryOpenPopup = () => {
+          const popup = popupRefs.current[selectedFeatureId];
+          if (popup) {
+            popup.openOn(map);
+          } else {
+            setTimeout(tryOpenPopup, 200);
+          }
+        };
+
+        tryOpenPopup();
+      }
+    }
+  }, [selectedFeatureId, features, map, popupRefs]);
+
+  return null;
+}
+
+const Map = ({ features, selectedFeatureId }: MapProps) => {
+  const popupRefs = useRef<Record<string, L.Popup | null>>({});
+  const [localSelectedId, setLocalSelectedId] = useState<string | null>(selectedFeatureId);
+
+  useEffect(() => {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    });
+  }, []);
+
+  const selectedFeature = features.find((f) => f.id === localSelectedId) ?? null;
+
+  useEffect(() => {
+    setLocalSelectedId(selectedFeatureId);
+  }, [selectedFeatureId]);
 
   return (
     <div className="relative h-full w-full">
-      <button
-        onClick={() => setIsPanelOpen(!isPanelOpen)}
-        className="absolute top-4 left-4 z-[1000] bg-white px-4 py-2 rounded shadow"
-      >
-        {isPanelOpen ? 'Close' : 'Open'}
-      </button>
-
-      <InfoPanel isPanelOpen={isPanelOpen} />
+      <InfoPanel isPanelOpen={!!selectedFeature} feature={selectedFeature} />
 
       <MapContainer
         center={[50.8323, 12.9253]}
@@ -49,16 +85,39 @@ const Map = ({ features }: MapProps) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        <FlyToSelected
+          features={features}
+          selectedFeatureId={localSelectedId}
+          popupRefs={popupRefs}
+        />
+
         {features.map((feature) => {
-          const { geometry, properties, id } = feature;
+          const { geometry, id } = feature;
           const coords = geometry?.coordinates;
           if (Array.isArray(coords) && coords.length === 2) {
             const [lng, lat] = coords;
             return (
-              <Marker key={id ?? `${lat}-${lng}`} position={[lat, lng]}>
-                <Popup>
-                  <h3>{properties?.name ?? 'No name'}</h3>
-                  <p>{properties?.description ?? 'No description'}</p>
+              <Marker
+                key={id ?? `${lat}-${lng}`}
+                position={[lat, lng]}
+                eventHandlers={{
+                  click: () => setLocalSelectedId(id),
+                }}
+              >
+                <Popup
+                  className="custom-popup w-[180px] h-[150px]"
+                  offset={[0, -41]}
+                  ref={(ref) => {
+                    if (id) {
+                      popupRefs.current[id] = ref;
+                    }
+                  }}
+                  eventHandlers={{
+                    remove: () => setLocalSelectedId(null),
+                  }}
+                >
+                  <CustomPopup feature={feature} />
                 </Popup>
               </Marker>
             );

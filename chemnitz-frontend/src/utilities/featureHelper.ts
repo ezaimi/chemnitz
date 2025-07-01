@@ -132,3 +132,26 @@ export const getFeatureProperties = (feature: Feature, type: string) => {
       return {};
   }
 };
+
+
+ export const formatAddress = (address: any) => {
+  if (!address) return 'Address not provided';
+
+  if (typeof address === 'string') {
+    const isJunk = address.toLowerCase().includes('undefined');
+    return isJunk ? 'Address not provided' : address;
+  }
+
+  if (typeof address === 'object') {
+    const parts = [
+      address.street,
+      address.houseNumber,
+      address.zipCode,
+      address.city,
+    ].filter(Boolean); 
+
+    return parts.length > 0 ? parts.join(', ') : 'Address not provided';
+  }
+
+  return 'Address not provided';
+};

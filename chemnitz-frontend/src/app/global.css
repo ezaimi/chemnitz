@@ -12,7 +12,17 @@
 }
 
 body {
-  color: var(--foreground);
+  color: var(--foreground); 
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.leaflet-popup-content-wrapper.custom-popup,
+.custom-popup .leaflet-popup-content {
+  padding: 2 !important;
+  border-radius: 1rem;
+}
+.custom-popup .leaflet-popup-content {
+  margin: 2 !important;
 }

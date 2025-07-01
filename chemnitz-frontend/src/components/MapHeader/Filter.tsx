@@ -38,6 +38,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
     onFilterChange(selectedCategory);
   };
 
+  
   return (
     <Box sx={{ maxWidth: { xs: 320, sm: 880 } }}>
       <Tabs

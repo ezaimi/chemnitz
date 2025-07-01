@@ -8,9 +8,10 @@ import CustomCard from './Card';
 interface CardGridWithPaginationProps {
   features: Feature[];
   selectedCategory: string;
+  onLocationClick: (id: string) => void;
 }
 
-export default function CardGridWithPagination({ features, selectedCategory }: CardGridWithPaginationProps) {
+export default function CardGridWithPagination({ features, selectedCategory, onLocationClick }: CardGridWithPaginationProps) {
   const [page, setPage] = useState(1);
   const [cardsPerPage, setCardsPerPage] = useState(4);
   const [fade, setFade] = useState(true);
@@ -52,7 +53,8 @@ export default function CardGridWithPagination({ features, selectedCategory }: C
           <CustomCard
             key={feature.id} // Ensure each card has a unique key
             selectedCategory={selectedCategory}
-            features={feature} // Pass single feature here
+            features={feature}
+            onLocationClick={onLocationClick}// Pass single feature here
           />
         ))}
       </div>
@@ -64,7 +66,8 @@ export default function CardGridWithPagination({ features, selectedCategory }: C
             <CustomCard
               key={feature.id} // Ensure each card has a unique key
               selectedCategory={selectedCategory}
-              features={feature} // Pass single feature here
+              features={feature}
+              onLocationClick={onLocationClick} // Pass single feature here
             />
           ))}
           <div className="h-6 sm:col-span-2"></div>
