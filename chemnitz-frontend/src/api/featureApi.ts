@@ -1,11 +1,7 @@
-import axios from 'axios';
+import axiosInstance from '@/config/axiosConfig';
 import { Feature } from '@/types/Features'; 
 import { Suggestion } from '@/types/Features';
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api/feature', // 👈 this part is fixed
-  timeout: 5000, // 5-second timeout
-});
 
 const categoryMap: { [key: string]: string } = {
   museum: 'tourism',
@@ -27,7 +23,7 @@ export const getFeaturesByCategory = async (category: string): Promise<Feature[]
   }
 
   try {
-    const response = await axiosInstance.get(`/category/${categoryValue}/${category}`);
+    const response = await axiosInstance.get(`feature/category/${categoryValue}/${category}`);
     return response.data as Feature[];
   } catch (error: unknown) {
     console.error(`Error fetching features for category: ${category}`, error);
@@ -40,7 +36,7 @@ export const getFeaturesByCategory = async (category: string): Promise<Feature[]
 export const getFeatureById = async (featureId: string): Promise<Feature> => {
   try {
     const encodedId = encodeURIComponent(featureId);
-    const response = await axiosInstance.get(`/id/${encodedId}`);
+    const response = await axiosInstance.get(`feature/id/${encodedId}`);
     return response.data as Feature;
   } catch (error: unknown) {
     console.error(`Error fetching feature by ID: ${featureId}`, error);
@@ -51,7 +47,7 @@ export const getFeatureById = async (featureId: string): Promise<Feature> => {
 
 export async function getFuzzySearchSuggestions(name: string): Promise<Suggestion[]> {
   try {
-    const response = await axiosInstance.get<Suggestion[]>(`/search/${encodeURIComponent(name)}`);
+    const response = await axiosInstance.get<Suggestion[]>(`feature/search/${encodeURIComponent(name)}`);
     return Array.isArray(response.data) ? response.data : [];
   } catch (error: any) {
     console.error('Error fetching fuzzy name suggestions:', error?.response?.data || error.message || error);

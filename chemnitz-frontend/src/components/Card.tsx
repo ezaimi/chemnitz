@@ -27,6 +27,9 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import LocationButton from './general/LocationButton';
 import { formatAddress } from '@/utilities/featureHelper';
 
+import { addToFavorites, removeFromFavorites, getFavorites } from '@/api/favoriteApi';
+
+
 // Expand More Button styles
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -57,26 +60,49 @@ export default function CustomCard({ features, selectedCategory, onLocationClick
 
   // Handle truncation detection for title and description
   React.useEffect(() => {
-  setTimeout(() => {
-    const elName = nameRef.current;
-    if (elName) {
-      setIsNameTruncated(Math.floor(elName.scrollWidth) > Math.floor(elName.clientWidth));
-    }
-    const elDesc = descRef.current;
-    if (elDesc) {
-      setIsDescTruncated(Math.floor(elDesc.scrollHeight) > Math.floor(elDesc.clientHeight));
-    }
-  }, 0);
-}, [featureProperties.name, featureProperties.description]);
+    setTimeout(() => {
+      const elName = nameRef.current;
+      if (elName) {
+        setIsNameTruncated(Math.floor(elName.scrollWidth) > Math.floor(elName.clientWidth));
+      }
+      const elDesc = descRef.current;
+      if (elDesc) {
+        setIsDescTruncated(Math.floor(elDesc.scrollHeight) > Math.floor(elDesc.clientHeight));
+      }
+    }, 0);
+  }, [featureProperties.name, featureProperties.description]);
 
   const handleExpandClick = () => {
     setExpanded((prev) => !prev);
   };
 
-  const handleFavoriteClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setFavorited((prev) => !prev);
-  };
+
+
+
+const handleFavoriteClick = async () => {
+  const newState = !favorited;
+
+  try {
+    if (newState) {
+      await addToFavorites(features.id);
+      setFavorited(newState);
+    } else {
+      await removeFromFavorites(features.id);
+      setFavorited(newState);
+    }
+  } catch (err: any) {
+    console.error('Failed to update favorite', err);
+    if (err.response && err.response.status === 401) {
+      alert('Please login to set favourites');
+    }
+
+    setFavorited(!newState); 
+  }
+
+  console.log("here");
+};
+
+
 
   const handleButtonClick = () => {
     onLocationClick(features.id);
@@ -92,7 +118,7 @@ export default function CustomCard({ features, selectedCategory, onLocationClick
     console.log("clicked title, isNameTruncated:", isNameTruncated);
 
     if (isNameTruncated) {
-      
+
       setAnchorElName(event.currentTarget);
     }
   };
@@ -122,7 +148,7 @@ export default function CustomCard({ features, selectedCategory, onLocationClick
     handlePopoverClose();
   };
 
- 
+
 
 
 
@@ -176,10 +202,10 @@ export default function CustomCard({ features, selectedCategory, onLocationClick
             paddingBottom: '8px',
             paddingLeft: '16px',
             paddingRight: '16px',
-            flexGrow: 1, 
+            flexGrow: 1,
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center', 
+            alignItems: 'center',
           }}
         >
           <Typography
@@ -192,7 +218,7 @@ export default function CustomCard({ features, selectedCategory, onLocationClick
               margin: 0,
               cursor: 'pointer',
               display: '-webkit-box',
-              WebkitLineClamp: 1, 
+              WebkitLineClamp: 1,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

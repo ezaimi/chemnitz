@@ -10,8 +10,8 @@ interface FavouriteProps {
 
 function Favourite({ favorited, handleFavoriteClick }: FavouriteProps) {
   return (
-    <Box
-      onClick={handleFavoriteClick}
+  <div onClick={handleFavoriteClick}>  
+  <Box
       sx={{
         position: 'absolute',
         top: 13,
@@ -27,7 +27,7 @@ function Favourite({ favorited, handleFavoriteClick }: FavouriteProps) {
         userSelect: 'none',
       }}
     >
-      {favorited ? (
+      <div className=''> {favorited ? (
         <FavoriteIcon
           fontSize="small"
           sx={{ fontSize: 16, color: 'black', opacity: 0.9 }}
@@ -37,8 +37,9 @@ function Favourite({ favorited, handleFavoriteClick }: FavouriteProps) {
           fontSize="small"
           sx={{ fontSize: 16, color: 'black', opacity: 0.9 }}
         />
-      )}
-    </Box>
+      )}</div>
+     
+    </Box></div>
   );
 }
 
