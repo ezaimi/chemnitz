@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Tooltip from "../general/Tooltip";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -17,19 +18,38 @@ type Props = {
 function LoginForm({ setActiveForm }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("dkok");
+  const [error, setError] = useState("");
   const router = useRouter();
 
 
   const handleLogin = async () => {
-    try {
-      const token = await loginUser(email, password);
-      sessionStorage.setItem("token", token);
-      router.push("/dashboard");
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Login failed");
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      credentials: "include", // for cookies/session
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      // Try to extract server error message if any
+      const data = await res.json().catch(() => ({}));
+      const message = data.message || "Login failed";
+      setError(message);
+      throw new Error(message);
     }
-  };
+
+    // Successful login
+    router.push("/");
+  } catch (error: any) {
+    setError(error.message || "Login failed");
+    // Optional: Log error for debugging
+    console.error(error);
+  }
+};
+
 
   return (
 
@@ -42,7 +62,7 @@ function LoginForm({ setActiveForm }: Props) {
             </Tooltip>
           </div>
           <h2 className="text-xl font-semibold mb-4 w-full flex justify-center text-[#1c191b]">Log in</h2>
-          <form onSubmit={handleLogin}>
+          <div>
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm text-[#666666] mb-1">Email</label>
               <div className="relative">
@@ -88,9 +108,9 @@ function LoginForm({ setActiveForm }: Props) {
             <div className='text-[12px]'>
               {error}
             </div>
-            <GreenButton label="Log in" />
+            <GreenButton label="Log in" handleLogin={handleLogin}/>
 
-          </form>
+          </div>
         </div>
       </div>
     </div>

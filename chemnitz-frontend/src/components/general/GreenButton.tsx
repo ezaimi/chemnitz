@@ -8,7 +8,9 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   startIcon?: React.ReactNode;
   hoverBgColor?: string;
   hoverTextColor?: string;
+  handleLogin?: () => void; // Explicit
 }
+
 
 export default function GreenButton({
   label,
@@ -18,6 +20,7 @@ export default function GreenButton({
   hoverTextColor = "#ffffff",
   className = "",
   startIcon,
+  handleLogin,
   ...rest
 }: Props) {
   return (
@@ -26,6 +29,7 @@ export default function GreenButton({
         backgroundColor: bgColor,
         color: textColor,
       }}
+      onClick={handleLogin} 
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = hoverBgColor;
         e.currentTarget.style.color = hoverTextColor;

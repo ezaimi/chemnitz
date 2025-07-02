@@ -26,3 +26,11 @@ body {
 .custom-popup .leaflet-popup-content {
   margin: 2 !important;
 }
+
+.custom-hover-card .MuiCardMedia-root img {
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.custom-hover-card:hover .MuiCardMedia-root img {
+  transform: scale(1.01);
+}

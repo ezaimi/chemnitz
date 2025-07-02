@@ -40,7 +40,8 @@ export default function HeaderButton({
         e.currentTarget.style.backgroundColor = bgColor;
         e.currentTarget.style.color = textColor;
       }}
-      className={`text-white focus:outline-none font-medium rounded-full border-1 border-[1c191b] w-full h-full text-sm text-center transition duration-200 flex justify-center gap-2 ${className}`}
+      className={`text-white focus:outline-none font-medium rounded-full border-1 border-[1c191b] w-full 
+       max-w-[5rem] h-full text-sm text-center whitespace-nowrap transition duration-200 flex justify-center gap-2 ${className}`}
       {...rest}
     >
       {startIcon && <span className="h-4">{startIcon}</span>}

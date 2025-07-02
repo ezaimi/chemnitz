@@ -1,4 +1,5 @@
 import "./global.css";
+import { UserProvider } from "@/components/AuthPage";
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -6,9 +7,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <header>
-          {/* Maybe add nav or logo here, but no login message */}
         </header>
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );

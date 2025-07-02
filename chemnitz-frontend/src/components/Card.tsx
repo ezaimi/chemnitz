@@ -155,6 +155,7 @@ const handleFavoriteClick = async () => {
 
   return (
     <Card
+    className='custom-hover-card'
       sx={{
         width: '100%',
         height: 'auto',
@@ -163,7 +164,13 @@ const handleFavoriteClick = async () => {
         flexDirection: 'column',
         justifyContent: 'space-between',
         maxWidth: '25rem',
-        minHeight: '26rem'
+        minHeight: '26rem',
+        border: '1px solid transparent',
+    transition: 'border-color 0.2s, box-shadow 0.2s',
+    '&:hover': {
+      borderColor: '#93b384', // Tailwind green-500, or use '#4ade80' for green-400
+      boxShadow: 8,
+    },
       }}
     >
       <div>
@@ -222,6 +229,7 @@ const handleFavoriteClick = async () => {
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              
             }}
             ref={nameRef}
             onClick={handleTitleClick}

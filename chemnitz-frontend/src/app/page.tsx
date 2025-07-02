@@ -4,6 +4,8 @@ import Header from '@/components/general/Header'
 import Hero from '@/components/general/Hero'
 import { HeaderItemsType } from '@/types/componentTypes'
 import AttractionsContainer from '@/components/AttractionsContainer'
+import TestCurrentUser from '@/components/TestCurrentUser'
+import Footer from '@/components/general/Footer'
 
 
 
@@ -11,13 +13,13 @@ export default function Home() {
   return (
     <>
       <div className='bg-[#f4f4f4]'>
-        <Header  />
+        <Header />
         <Hero />
         <br />
         <br />
         <br />
         <br />
-        <About/>
+        <About />
         <br />
         <br />
         <br />
@@ -25,7 +27,11 @@ export default function Home() {
         <br />
         <br />
         <br />
-        <AttractionsContainer/>
+        <AttractionsContainer />
+      
+        
+        <Footer/>
+
       </div>
     </>
   )
