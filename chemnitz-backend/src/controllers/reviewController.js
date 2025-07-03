@@ -60,11 +60,20 @@ exports.getReviews = async (req, res) => {
       return res.status(404).json({ message: 'Feature not found inside document' });
     }
 
-    res.json({ reviews: feature.reviews || [], averageRating: feature.averageRating || 0 });
+    // Round here before sending:
+    const roundedAverage = feature.averageRating
+      ? Math.round(feature.averageRating * 10) / 10
+      : 0;
+
+    res.json({
+      reviews: feature.reviews || [],
+      averageRating: roundedAverage,
+    });
   } catch (err) {
     res.status(500).json({ message: 'Failed to get reviews', error: err.message });
   }
 };
+
 
 
 exports.deleteReview = async (req, res) => {

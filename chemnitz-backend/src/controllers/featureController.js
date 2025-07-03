@@ -1,5 +1,5 @@
 const Feature = require('../models/AttractionModel');
-
+const Fuse = require('fuse.js');
 
 exports.getAllFeatures = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ exports.getAllFeatures = async (req, res) => {
 };
 
 const categoryMap = {
- museum: 'tourism',
+  museum: 'tourism',
   gallery: 'tourism',
   artwork: 'tourism',
   guest_house: 'tourism',
@@ -20,7 +20,7 @@ const categoryMap = {
   bench: 'amenity',
   theatre: 'amenity',
   clock: 'amenity',
-  deli: 'shop'
+  deli: 'shop'
 };
 
 exports.getFeaturesByCategory = async (req, res) => {
@@ -38,15 +38,22 @@ exports.getFeaturesByCategory = async (req, res) => {
       {
         $project: {
           _id: 0,
-          id: "$features.id", 
-          geometry: "$features.geometry", 
-          properties: "$features.properties"
+          id: "$features.id",
+          geometry: "$features.geometry",
+          properties: "$features.properties",
+          reviews: "$features.reviews",
+          averageRating: "$features.averageRating"
         }
       }
     ]);
 
-    //console.log("Datalength: ", result.length);
-    res.status(200).json(result);
+    // Round averageRating in the response:
+    const rounded = result.map(f => ({
+      ...f,
+      averageRating: f.averageRating ? Math.round(f.averageRating * 10) / 10 : 0
+    }));
+
+    res.status(200).json(rounded);
   } catch (err) {
     res.status(500).json({
       message: 'Error retrieving features by category',
@@ -54,8 +61,6 @@ exports.getFeaturesByCategory = async (req, res) => {
     });
   }
 };
-
-
 
 exports.getFeatureById = async (req, res) => {
   const featureId = req.params.featureId;
@@ -68,43 +73,45 @@ exports.getFeatureById = async (req, res) => {
           "features.id": featureId
         }
       },
-       {
+      {
         $project: {
           _id: 0,
-          id: "$features.id", 
-          geometry: "$features.geometry", 
-          properties: "$features.properties"
+          id: "$features.id",
+          geometry: "$features.geometry",
+          properties: "$features.properties",
+          reviews: "$features.reviews",
+          averageRating: "$features.averageRating"
         }
       }
     ]);
 
-    console.log(result);
     if (result.length === 0) {
       return res.status(404).json({ message: `Feature with ID '${featureId}' not found` });
     }
 
-    res.status(200).json(result[0]);
+    // Round averageRating before sending:
+    const f = result[0];
+    const roundedFeature = {
+      ...f,
+      averageRating: f.averageRating ? Math.round(f.averageRating * 10) / 10 : 0
+    };
+
+    res.status(200).json(roundedFeature);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching feature by ID', error: error.message });
   }
 };
 
-
-
-const Fuse = require('fuse.js');
-
 exports.getFeaturesByFuzzyName = async (req, res) => {
-  const searchTerm = req.params.name; 
+  const searchTerm = req.params.name;
   try {
-    
     const doc = await Feature.findOne({});
-    const features = doc ? doc.features : []; 
+    const features = doc ? doc.features : [];
 
-   
     const fuse = new Fuse(features, {
-      keys: ['properties.name'], 
-      threshold: 0.4, 
-      minMatchCharLength: 1, 
+      keys: ['properties.name'],
+      threshold: 0.4,
+      minMatchCharLength: 1,
     });
 
     const result = fuse.search(searchTerm).map(item => ({
