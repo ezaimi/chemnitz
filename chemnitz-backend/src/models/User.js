@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin'], default: 'user' }, 
   googleId: { type: String, unique: true },  
   googleToken: { type: String },
+  favorites: {
+    type: [String],
+    default: [],
+  },
 });
 
 module.exports = mongoose.model('User', userSchema);
