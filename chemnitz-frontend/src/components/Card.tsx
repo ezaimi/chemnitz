@@ -36,9 +36,8 @@ interface CustomCardProps {
   selectedCategory: string;
   onLocationClick: (id: string) => void;
   contextUser: User | null;
-  setUser: (user: User) => void
-    onReviewSubmitted: () => void; // <--- Add this
-
+  setUser: (user: User) => void;
+  onReviewSubmitted: () => void;
 }
 
 export default function CustomCard({
@@ -361,11 +360,10 @@ export default function CustomCard({
       </Dialog>
 
       {showReview && (
-        <MakeReview
+         <MakeReview
           featureId={features.id}
           onClose={() => setShowReview(false)}
-              onReviewSubmitted={onReviewSubmitted} // <--- forward!
-
+          onReviewSubmitted={onReviewSubmitted}
         />
       )}
     </Card>

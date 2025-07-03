@@ -1,102 +1,135 @@
-import React from 'react'
-import { useState,useEffect } from "react";
-import { fetchCurrentUser } from "@/api/userApi";
-import { useUser } from '../AuthPage';
+import React, { useState, useEffect } from "react";
+import { fetchCurrentUser, updateUserProfile } from "@/api/userApi"; // <-- import
 
+const DEMO_BIOS = [
+    "Building tomorrow, one line of code at a time.",
+    "Just another adventurer in the land of Chemnitz.",
+    "Cultural explorer and coffee enthusiast.",
+    "Bringing ideas to life through tech.",
+    "Keep calm and discover Chemnitz!"
+];
 
+function getRandomBio() {
+    return DEMO_BIOS[Math.floor(Math.random() * DEMO_BIOS.length)];
+}
 
 export default function UserInfo() {
+    const [user, setUser] = useState<any>(null);
+    const [form, setForm] = useState<any>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [bio, setBio] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    useEffect(() => {
+        async function loadUser() {
+            setLoading(true);
+            try {
+                const u = await fetchCurrentUser();
+                setUser(u);
+                setForm(u);
+                setBio(getRandomBio());
+            } catch {
+                setUser(null);
+                setForm(null);
+                setBio(getRandomBio());
+            }
+            setLoading(false);
+        }
+        loadUser();
+    }, []);
 
-     const [user, setUser] = useState<any>(null);
-  const [form, setForm] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
+    if (loading) return <div>Loading profile...</div>;
+    if (!user) return <div>User not found or not logged in.</div>;
 
-  useEffect(() => {
-    async function loadUser() {
-      setLoading(true);
-      try {
-        const u = await fetchCurrentUser();
-        setUser(u);
-        setForm(u);
-      } catch {
-        setUser(null);
-        setForm(null);
-      }
-      setLoading(false);
-    }
-    loadUser();
-  }, []);
-
-  if (loading) return <div>Loading profile...</div>;
-  if (!user) return <div>User not found or not logged in.</div>;
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSave = () => {
-        setUser(form);
-        setIsEditing(false);
+    const handleSave = async () => {
+        setError(null);
+        setSuccess(null);
+
+        const payload: { name: string; password?: string } = { name: form.name };
+        if (form.password && form.password.trim()) {
+            payload.password = form.password;
+        }
+        try {
+            const updated = await updateUserProfile({
+                name: form.name,
+                password: form.password,
+            });
+            setUser(updated);
+            setForm(updated);
+            setIsEditing(false);
+            setSuccess("Profile updated successfully!");
+        } catch (err: any) {
+            setError(
+                err?.response?.data?.message ||
+                "Failed to update profile. Please try again."
+            );
+        }
     };
 
     const handleCancel = () => {
         setForm(user);
         setIsEditing(false);
+        setError(null);
+        setSuccess(null);
     };
 
     return (
-        <div className="flex flex-col items-center gap-3 w-full">
-
-            <div className="rounded-full border-4 border-green-500 p-1 mb-2">
+        <div className="flex flex-col items-center gap-5 w-full rounded-3xl p-6 bg-gradient-to-b from-[#f6fef5] to-[#eaf8ec] shadow-lg max-w-sm mx-auto border border-[#d7edd8]">
+            <div className="rounded-full border-4 border-[#7bac7c] p-1 mb-2 bg-white shadow-md">
                 <img
-                    src={user.avatar}
+                    src={'/assets/image/profile.png'}
                     alt={user.name}
                     className="rounded-full w-28 h-28 object-cover shadow-lg"
                 />
             </div>
-            {isEditing ? (
-                <form className="flex flex-col gap-2 w-full" onSubmit={e => { e.preventDefault(); handleSave(); }}>
 
-                    <input
-                        name="name"
-                        className="text-lg font-bold text-gray-800 px-3 py-1 rounded-xl border focus:ring-2 focus:ring-green-200"
-                        value={form.name}
-                        onChange={handleChange}
-                        required
-                        autoFocus
-                    />
-                    <input
-                        name="username"
-                        className="text-sm text-gray-500 px-3 py-1 rounded-xl border focus:ring-2 focus:ring-green-200"
-                        value={form.username}
-                        onChange={handleChange}
-                        required
-                    />
-                    <div className="flex items-center gap-2 text-green-700 mt-1">
-                        <svg width={18} height={18} fill="none" viewBox="0 0 20 20"><path d="M10 2a7 7 0 0 1 7 7c0 5.25-7 9-7 9s-7-3.75-7-9a7 7 0 0 1 7-7Zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="#22c55e" /></svg>
+            {isEditing ? (
+                <form
+                    className="flex flex-col gap-4 w-full"
+                    onSubmit={e => { e.preventDefault(); handleSave(); }}
+                >
+                    <div>
+                        <label htmlFor="name" className="block text-xs font-medium text-[#446c47] mb-1">Full Name</label>
                         <input
-                            name="location"
-                            className="text-xs bg-transparent border-b border-green-200 focus:ring-0 px-1 py-0.5 text-green-700"
-                            value={form.location}
+                            id="name"
+                            name="name"
+                            className="w-full  px-4 py-2 rounded-xl border border-[#b6d3b7] focus:ring-2 focus:ring-[#7bac7c] shadow"
+                            value={form.name}
                             onChange={handleChange}
                             required
+                            autoFocus
+                            placeholder="Your Name"
                         />
                     </div>
-                    <textarea
-                        name="bio"
-                        className="text-gray-700 text-center mt-2 mb-2 px-3 py-2 rounded-xl border focus:ring-2 focus:ring-green-200"
-                        value={form.bio}
-                        onChange={handleChange}
-                        rows={3}
-                        maxLength={160}
-                        placeholder="Your bio"
-                    />
-                    <div className="flex w-full gap-2 mt-3">
+                    <div>
+                        <label htmlFor="password" className="block text-xs font-medium text-[#446c47] mb-1">Password</label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            className="w-full text-base px-4 py-2 rounded-xl border border-[#b6d3b7] focus:ring-2 focus:ring-[#7bac7c] shadow"
+                            value={form.password || ""}
+                            onChange={handleChange}
+                            placeholder="New Password"
+                            autoComplete="off"
+                        />
+                    </div>
+                    {/* <div>
+            <span className="block text-xs font-medium text-[#446c47] mb-1">Bio</span>
+            <span className="inline-block px-3 py-2 rounded-full bg-[#f5f5f5] border border-[#cde3ce] text-[#4d694e] text-xs shadow-sm transition-all">
+              {bio}
+            </span>
+            <span className="block text-[10px] text-gray-400 mt-1">* Bio is for demo only</span>
+          </div> */}
+                    <div className="flex w-full gap-3 mt-1">
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2 bg-green-500 text-white rounded-2xl font-semibold shadow transition hover:bg-green-600"
+                            className="flex-1 px-4 py-2 bg-[#7bac7c] text-white rounded-2xl font-semibold shadow transition hover:bg-[#6aa46b]"
                         >
                             Save
                         </button>
@@ -112,14 +145,11 @@ export default function UserInfo() {
             ) : (
                 <>
                     <div className="text-2xl font-bold text-gray-800">{user.name}</div>
-                    <div className="text-sm text-gray-500">{user.username}</div>
-                    <div className="flex items-center gap-2 text-green-700 mt-2">
-                        <svg width={18} height={18} fill="none" viewBox="0 0 20 20"><path d="M10 2a7 7 0 0 1 7 7c0 5.25-7 9-7 9s-7-3.75-7-9a7 7 0 0 1 7-7Zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="#22c55e" /></svg>
-                        <span className="text-xs">{user.location}</span>
-                    </div>
-                    <p className="text-gray-700 text-center mt-4 mb-2">{user.bio}</p>
+                    {/* <span className="inline-block px-4 py-2 rounded-2xl bg-[#ffffff] border border-[#cde3ce] text-[#558062] text-xs font-semibold shadow mb-2 mt-1">
+            {bio}
+          </span> */}
                     <button
-                        className="mt-3 px-6 py-2 bg-green-500 text-white rounded-full font-semibold shadow transition hover:bg-green-600 focus:outline-none"
+                        className="mt-2 px-6 py-2 bg-[#7bac7c] text-white rounded-full font-semibold shadow transition hover:bg-[#6aa46b] focus:outline-none"
                         onClick={() => setIsEditing(true)}
                     >
                         Edit Profile
@@ -127,5 +157,5 @@ export default function UserInfo() {
                 </>
             )}
         </div>
-    )
+    );
 }

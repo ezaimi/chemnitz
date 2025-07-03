@@ -23,28 +23,28 @@ function MakeReview({ onClose, featureId, onReviewSubmitted }: MakeReviewProps) 
   if (!mounted) return null;
 
  const handleSubmit = async () => {
-  try {
-    const res = await fetch(`http://localhost:5000/api/user/reviews/${encodeURIComponent(featureId)}`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ rating, comment: text }),
-    });
+    try {
+      const res = await fetch(`http://localhost:5000/api/user/reviews/${encodeURIComponent(featureId)}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating, comment: text }),
+      });
 
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.message || "Failed to submit review");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to submit review");
+      }
+      setSubmitted(true);
+      if (onReviewSubmitted) onReviewSubmitted();
+    } catch (err: any) {
+      alert(err.message || "Failed to submit review");
     }
-    setSubmitted(true);
-        if (onReviewSubmitted) onReviewSubmitted(); // <-- call here!
+  };
 
-  } catch (err: any) {
-    alert(err.message || "Failed to submit review");
-  }
-};
-
+  
   return createPortal(
     <div className="fixed z-[50000] inset-0 flex justify-center items-center bg-blur bg-opacity-50 backdrop-blur-sm px-6 sm:px-0">
       <div className="relative w-full max-w-md bg-white rounded-xl p-6 shadow-lg text-center">

@@ -20,7 +20,7 @@ export default function UserProfilePage() {
   const TopRightButtons = () => (
     <>
       <button
-        className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full font-semibold shadow transition"
+        className="px-5 py-2 bg-[#7bac7c] hover:bg-green-600 text-white rounded-full font-semibold shadow transition"
         onClick={() => window.location.href = "/"}
       >
         Home
@@ -81,7 +81,7 @@ export default function UserProfilePage() {
 
         <main className="flex-1 px-2 py-10 md:px-8 md:py-16 flex flex-col items-center md:ml-[20rem]">
           <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-900 tracking-tight">
-            <span className="text-green-500">Your</span> Favourites
+            <span className="text-[#7bac7c]">Your</span> Favourites
           </h2>
           <div className="w-full ">
             <UserFavorites />

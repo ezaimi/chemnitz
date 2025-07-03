@@ -13,7 +13,12 @@ interface CardGridWithPaginationProps {
   onReviewSubmitted: () => void;
 }
 
-export default function CardGridWithPagination({ features, selectedCategory, onLocationClick, onReviewSubmitted }: CardGridWithPaginationProps) {
+export default function CardGridWithPagination({
+  features,
+  selectedCategory,
+  onLocationClick,
+  onReviewSubmitted
+}: CardGridWithPaginationProps) {
   const [page, setPage] = useState(1);
   const [cardsPerPage, setCardsPerPage] = useState(4);
   const [fade, setFade] = useState(true);
@@ -54,37 +59,33 @@ export default function CardGridWithPagination({ features, selectedCategory, onL
       <div className={`hidden md:grid grid-cols-3 lg:grid-cols-4 gap-4 mb-4 transition-opacity duration-500 ${fadeClass}`}>
         {visibleCards.map((feature) => (
           <CustomCard
-            key={feature.id} // Ensure each card has a unique key
+            key={feature.id}
             selectedCategory={selectedCategory}
             features={feature}
             onLocationClick={onLocationClick}
             contextUser={contextUser}
             setUser={setUser}
-                            onReviewSubmitted={onReviewSubmitted} // <--- pass down
-
+            onReviewSubmitted={onReviewSubmitted}
           />
         ))}
       </div>
-
       {/* Mobile view */}
       <div className={`flex justify-center overflow-y-scroll py-8 w-full md:hidden transition-opacity duration-500 ${fadeClass}`}>
         <div className="w-[90%] max-w-[25rem] grid gap-4 grid-cols-1 sm:grid-cols-2 sm:w-full sm:max-w-full mx-auto">
           {visibleCards.map((feature) => (
             <CustomCard
-              key={feature.id} // Ensure each card has a unique key
+              key={feature.id}
               selectedCategory={selectedCategory}
               features={feature}
               onLocationClick={onLocationClick}
               contextUser={contextUser}
               setUser={setUser}
-                onReviewSubmitted={onReviewSubmitted} // <--- pass down
-
+              onReviewSubmitted={onReviewSubmitted}
             />
           ))}
           <div className="h-6 sm:col-span-2"></div>
         </div>
       </div>
-
       <div className="flex justify-center mt-5">
         <Pagination count={totalPages} page={page} onChange={handleChange} />
       </div>
