@@ -10,17 +10,28 @@ export interface FeatureProperties {
   wheelchair?: boolean;
   outdoor_seating?: boolean;
   indoor_seating?: boolean;
+
   // Add more properties as necessary
 }
+
+export interface Review {
+  email: string;
+  comment: string;
+  rating: number;
+  date: string; 
+}
+
 
 export interface Feature {
   id: string;
   type: string; // e.g., 'restaurant', 'museum', etc.
   properties: FeatureProperties;
   geometry: { type: string; coordinates: [number, number] };
+  averageRating: number;
+  reviews: string;
 }
 
 export interface Suggestion {
   id: string;
-  name: string;
+  name: Review[];
 }

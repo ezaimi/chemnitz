@@ -23,16 +23,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const fetchUser = async () => {
+
       try {
         const res = await fetch("http://localhost:5000/api/user/getUser", {
           credentials: "include",
         });
+
         if (!res.ok) throw new Error();
         const user: User = await res.json();
-        console.log('joj',await res.json());
+
         setUser(user);
         localStorage.setItem("user", JSON.stringify(user));
-      } catch {
+      } catch(e) {
+               
+
         setUser(null);
         localStorage.removeItem("user");
       }

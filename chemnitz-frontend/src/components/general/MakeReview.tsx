@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface MakeReviewProps {
+  featureId: string;
   onClose: () => void;
+    onReviewSubmitted: () => void; // <-- add this!
+
 }
 
-function MakeReview({ onClose }: MakeReviewProps) {
+
+function MakeReview({ onClose, featureId, onReviewSubmitted }: MakeReviewProps) {
   const [mounted, setMounted] = useState(false);
   const [text, setText] = useState("");
   const [rating, setRating] = useState(0);
@@ -18,10 +22,28 @@ function MakeReview({ onClose }: MakeReviewProps) {
 
   if (!mounted) return null;
 
-  const handleSubmit = () => {
+ const handleSubmit = async () => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/user/reviews/${encodeURIComponent(featureId)}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ rating, comment: text }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || "Failed to submit review");
+    }
     setSubmitted(true);
-    console.log("Review submitted:", { text, rating });
-  };
+        if (onReviewSubmitted) onReviewSubmitted(); // <-- call here!
+
+  } catch (err: any) {
+    alert(err.message || "Failed to submit review");
+  }
+};
 
   return createPortal(
     <div className="fixed z-[50000] inset-0 flex justify-center items-center bg-blur bg-opacity-50 backdrop-blur-sm px-6 sm:px-0">

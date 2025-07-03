@@ -1,70 +1,138 @@
-import React from 'react'
-import { useState } from "react";
+'use client';
+import React, { useState, useEffect, useRef } from "react";
+import { getFeatureById } from "@/api/featureApi";
+import { Feature } from '@/types/Features';
+import Map from "@/components/map/Map";
+import { useUser } from "../AuthPage";
+import CustomCard from "../Card";
+import { Pagination } from "@mui/material";
 
+// Hook to get responsive cards per page
+function useCardsPerPage() {
+  const [cards, setCards] = useState(3);
 
-const favourites = [
-    {
-        id: "way/23757830",
-        title: "Sächsisches Eisenbahnmuseum",
-        description: "One of the largest railway museums in Germany.",
-        image: "/assets/image/loginBg.png",
-        link: "https://www.sem-chemnitz.de/",
-    },
-    {
-        id: "way/102957382",
-        title: "Restaurant Villa Esche",
-        description: "Historic restaurant with classic Saxon cuisine.",
-        image: "/assets/image/loginBg1.png",
-        link: "http://www.restaurant-villaesche.de/",
-    },
-];
+  useEffect(() => {
+    function updateCards() {
+      // You can adjust this breakpoint to match your Tailwind config (md = 768px)
+      if (window.innerWidth < 768) {
+        setCards(3);
+      } else {
+        setCards(6);
+      }
+    }
+    updateCards();
+    window.addEventListener('resize', updateCards);
+    return () => window.removeEventListener('resize', updateCards);
+  }, []);
+  return cards;
+}
 
 export default function UserFavorites() {
+    const { user: contextUser, setUser } = useUser();
+    const [favorites, setFavorites] = useState<Feature[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
 
-    const [favs, setFavs] = useState(favourites);
+    const CARDS_PER_PAGE = useCardsPerPage();
+    const mapRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        async function fetchUserFavorites() {
+            setLoading(true);
+            if (contextUser && contextUser.favorites && contextUser.favorites.length > 0) {
+                const favs = await Promise.all(
+                    contextUser.favorites.map(async (id: string) => {
+                        try {
+                            const feature = await getFeatureById(id);
+                            return feature;
+                        } catch {
+                            return null;
+                        }
+                    })
+                );
+                setFavorites(favs.filter(Boolean) as Feature[]);
+            } else {
+                setFavorites([]);
+            }
+            setLoading(false);
+        }
+        fetchUserFavorites();
+    }, [contextUser]);
+
+    const refreshFavorites = async () => {
+  if (contextUser && contextUser.favorites && contextUser.favorites.length > 0) {
+    const favs = await Promise.all(
+      contextUser.favorites.map(async (id: string) => {
+        try {
+          const feature = await getFeatureById(id);
+          return feature;
+        } catch {
+          return null;
+        }
+      })
+    );
+    setFavorites(favs.filter(Boolean) as Feature[]);
+  } else {
+    setFavorites([]);
+  }
+};
 
 
+    const handleLocationClick = (featureId: string) => {
+        setSelectedFeatureId(featureId);
+        if (mapRef.current) {
+            mapRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    const pageCount = Math.ceil(favorites.length / CARDS_PER_PAGE);
+    const paginatedFavorites = favorites.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
+
+    if (loading) return <div>Loading favorites...</div>;
 
     return (
-        <>
-            {favs.length === 0 ? (
-                <div className="col-span-full text-gray-500 italic">No favorites yet. Start exploring Chemnitz!</div>
+        <div className="w-full">
+            {favorites.length === 0 ? (
+                <div className="col-span-full text-gray-500 italic">
+                    No favorites yet. Start exploring Chemnitz!
+                </div>
             ) : (
-                favs.map((fav) => (
-                    <a
-                        key={fav.id}
-                        href={fav.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition flex flex-col overflow-hidden border border-transparent hover:border-green-400"
-                    >
-                        <img
-                            src={fav.image}
-                            alt={fav.title}
-                            className="h-40 w-full object-cover group-hover:scale-105 transition"
-                        />
-                        <div className="flex-1 flex flex-col p-5">
-                            <div className="flex justify-between items-start">
-                                <h3 className="font-semibold text-lg text-gray-800 group-hover:text-green-600">{fav.title}</h3>
-                                <button
-                                    className="ml-2 p-1 bg-black/5 hover:bg-green-100 rounded-full transition"
-                                    aria-label="Remove from favorites"
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        setFavs((prev) => prev.filter((item) => item.id !== fav.id));
-                                    }}
-                                >
-                                    <svg width={20} height={20} fill="none" viewBox="0 0 20 20">
-                                        <path d="M6 6l8 8M6 14L14 6" stroke="#18181b" strokeWidth={2} strokeLinecap="round" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <p className="text-gray-600 mt-2 mb-3 line-clamp-2">{fav.description}</p>
-                            <span className="inline-block text-green-700 text-xs font-medium bg-green-100 rounded-full px-3 py-1 mt-auto self-start">Explore</span>
+                <>
+                    <div className="w-full px-2 md:px-10 py-5">
+                        <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                            {paginatedFavorites.map((feature) => (
+                                <div className="flex justify-center" key={feature.id}>
+                                    <CustomCard
+                                        features={feature}
+                                        selectedCategory={""}
+                                        onLocationClick={() => handleLocationClick(feature.id)}
+                                        contextUser={contextUser}
+                                        setUser={setUser}
+                                          onReviewSubmitted={refreshFavorites}  // <--- add this line!
+
+                                        
+                                    />
+                                </div>
+                            ))}
                         </div>
-                    </a>
-                ))
+                        {pageCount > 1 && (
+                            <div className="flex justify-center mt-8">
+                                <Pagination
+                                    count={pageCount}
+                                    page={page}
+                                    onChange={(_, value) => setPage(value)}
+                                    color="primary"
+                                    shape="rounded"
+                                />
+                            </div>
+                        )}
+                    </div>
+                    <div ref={mapRef} className="w-full mt-8 h-[30rem] rounded-xl overflow-hidden border border-gray-200">
+                        <Map features={favorites} selectedFeatureId={selectedFeatureId} />
+                    </div>
+                </>
             )}
-        </>
-    )
+        </div>
+    );
 }

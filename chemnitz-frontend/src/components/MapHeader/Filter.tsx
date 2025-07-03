@@ -1,3 +1,6 @@
+// Filter.tsx
+'use client';
+
 import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -27,20 +30,38 @@ export const headerData: { name: string; icon: React.ElementType; type: 'tourism
 
 interface FilterProps {
   onFilterChange: (category: string) => void;
+  selectedCategory: string | null;
 }
 
-export default function Filter({ onFilterChange }: FilterProps) {
-  const [value, setValue] = React.useState(0);
+export default function Filter({ onFilterChange, selectedCategory }: FilterProps) {
+  // set active tab according to selectedCategory
+  const initialIndex =
+    selectedCategory !== null
+      ? headerData.findIndex(
+          (h) => h.name.toLowerCase() === selectedCategory.toLowerCase()
+        )
+      : -1;
+  const [value, setValue] = React.useState(initialIndex >= 0 ? initialIndex : 0);
+
+  React.useEffect(() => {
+    // Sync tab when category changes externally (e.g. cleared by search)
+    if (selectedCategory === null) setValue(-1);
+    else {
+      const i = headerData.findIndex(
+        (h) => h.name.toLowerCase() === selectedCategory.toLowerCase()
+      );
+      setValue(i >= 0 ? i : 0);
+    }
+  }, [selectedCategory]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-    const selectedCategory = headerData[newValue].name.toLowerCase();
-    onFilterChange(selectedCategory);
+    const selected = headerData[newValue].name.toLowerCase();
+    onFilterChange(selected);
   };
 
-  
   return (
-    <Box sx={{ maxWidth: { xs: 320, sm: 880 } }}>
+    <Box sx={{ maxWidth: { xs: 320, sm: 750 }, width: '100%' }}>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -65,13 +86,11 @@ export default function Filter({ onFilterChange }: FilterProps) {
             iconPosition="start"
             sx={{
               minHeight: 'auto',
-              paddingY: "10px",
+              paddingY: '10px',
               lineHeight: 'normal',
               color: value === index ? 'white' : 'black',
               backgroundColor: value === index ? 'black' : 'transparent',
-              transform: value === index ? 'scale(1.05)' : 'scale(1)',
-              opacity: value === index ? 1 : 0.8,
-              transition: 'all 0.5s ease-in-out',
+              transition: 'all 0.3s ease-in-out',
               '&.Mui-selected': {
                 color: 'white',
                 backgroundColor: 'black',

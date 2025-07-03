@@ -4,17 +4,20 @@ import React, { useState, useEffect } from 'react';
 import Pagination from '@mui/material/Pagination';
 import { Feature } from '@/types/Features';
 import CustomCard from './Card';
+import { useUser } from './AuthPage';
 
 interface CardGridWithPaginationProps {
   features: Feature[];
   selectedCategory: string;
   onLocationClick: (id: string) => void;
+  onReviewSubmitted: () => void;
 }
 
-export default function CardGridWithPagination({ features, selectedCategory, onLocationClick }: CardGridWithPaginationProps) {
+export default function CardGridWithPagination({ features, selectedCategory, onLocationClick, onReviewSubmitted }: CardGridWithPaginationProps) {
   const [page, setPage] = useState(1);
   const [cardsPerPage, setCardsPerPage] = useState(4);
   const [fade, setFade] = useState(true);
+  const { user: contextUser, setUser } = useUser();
 
   useEffect(() => {
     const updateCardsPerPage = () => {
@@ -54,7 +57,11 @@ export default function CardGridWithPagination({ features, selectedCategory, onL
             key={feature.id} // Ensure each card has a unique key
             selectedCategory={selectedCategory}
             features={feature}
-            onLocationClick={onLocationClick}// Pass single feature here
+            onLocationClick={onLocationClick}
+            contextUser={contextUser}
+            setUser={setUser}
+                            onReviewSubmitted={onReviewSubmitted} // <--- pass down
+
           />
         ))}
       </div>
@@ -67,7 +74,11 @@ export default function CardGridWithPagination({ features, selectedCategory, onL
               key={feature.id} // Ensure each card has a unique key
               selectedCategory={selectedCategory}
               features={feature}
-              onLocationClick={onLocationClick} // Pass single feature here
+              onLocationClick={onLocationClick}
+              contextUser={contextUser}
+              setUser={setUser}
+                onReviewSubmitted={onReviewSubmitted} // <--- pass down
+
             />
           ))}
           <div className="h-6 sm:col-span-2"></div>

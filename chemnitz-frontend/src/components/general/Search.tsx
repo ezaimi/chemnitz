@@ -1,34 +1,31 @@
+'use client';
 import { getFuzzySearchSuggestions } from '@/api/featureApi';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface Suggestion {
   id: string;
   name: string;
 }
-
 interface SearchProps {
   onSuggestionSelect: (featureId: string) => void;
+  value: string;
+  onChange: (val: string) => void;
 }
-
-export default function Search({ onSuggestionSelect }: SearchProps) {
-  const [search, setSearch] = useState('');
+export default function Search({ onSuggestionSelect, value, onChange }: SearchProps) {
   const [results, setResults] = useState<Suggestion[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Fetch suggestions as user types
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
+  useEffect(() => {
     if (value.length < 1) {
       setResults([]);
       setIsDropdownOpen(false);
       return;
     }
-
-    try {
-      const res = await getFuzzySearchSuggestions(value);
+    let canceled = false;
+    getFuzzySearchSuggestions(value).then((res) => {
+      if (canceled) return;
       if (res && res.length > 0) {
         setResults(res);
         setIsDropdownOpen(true);
@@ -36,11 +33,11 @@ export default function Search({ onSuggestionSelect }: SearchProps) {
         setResults([]);
         setIsDropdownOpen(false);
       }
-    } catch {
-      setResults([]);
-      setIsDropdownOpen(false);
-    }
-  };
+    });
+    return () => {
+      canceled = true;
+    };
+  }, [value]);
 
   // Hide dropdown when not focused
   const handleBlur = () => setTimeout(() => setIsDropdownOpen(false), 100);
@@ -65,8 +62,8 @@ export default function Search({ onSuggestionSelect }: SearchProps) {
             className="bg-gray-50 border-2 border-black text-gray-900 text-sm rounded-3xl block w-full ps-10 p-2.5 focus:outline-none focus:ring focus:ring-emerald-700"
             placeholder="Search"
             autoComplete="off"
-            value={search}
-            onChange={handleChange}
+            value={value}
+            onChange={e => onChange(e.target.value)}
             onBlur={handleBlur}
             onFocus={handleFocus}
           />
@@ -79,7 +76,7 @@ export default function Search({ onSuggestionSelect }: SearchProps) {
               key={item.id || i}
               className="px-4 py-2 hover:bg-emerald-50 cursor-pointer"
               onMouseDown={() => {
-                setSearch(item.name);
+                onChange(item.name); // set search to this suggestion
                 setIsDropdownOpen(false);
                 onSuggestionSelect(item.id);
               }}

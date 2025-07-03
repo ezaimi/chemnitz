@@ -44,8 +44,7 @@ function LoginForm({ setActiveForm }: Props) {
         throw new Error(message);
       }
 
-      // Successful login
-      router.push("/");
+      window.location.href = '/'
     } catch (error: any) {
       setError(error.message || "Login failed");
       // Optional: Log error for debugging

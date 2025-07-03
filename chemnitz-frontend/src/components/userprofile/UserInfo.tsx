@@ -1,21 +1,35 @@
 import React from 'react'
-import { useState } from "react";
-
-const initialUser = {
-    name: "Anna Müller",
-    username: "@annam",
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    bio: "Travel enthusiast. Exploring Chemnitz one spot at a time.",
-    location: "Chemnitz, Germany",
-};
+import { useState,useEffect } from "react";
+import { fetchCurrentUser } from "@/api/userApi";
+import { useUser } from '../AuthPage';
 
 
 
 export default function UserInfo() {
 
-    const [user, setUser] = useState(initialUser);
-    const [form, setForm] = useState(user);
-    const [isEditing, setIsEditing] = useState(false);
+     const [user, setUser] = useState<any>(null);
+  const [form, setForm] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUser() {
+      setLoading(true);
+      try {
+        const u = await fetchCurrentUser();
+        setUser(u);
+        setForm(u);
+      } catch {
+        setUser(null);
+        setForm(null);
+      }
+      setLoading(false);
+    }
+    loadUser();
+  }, []);
+
+  if (loading) return <div>Loading profile...</div>;
+  if (!user) return <div>User not found or not logged in.</div>;
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

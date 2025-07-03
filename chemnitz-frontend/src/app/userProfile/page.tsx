@@ -2,9 +2,9 @@
 import UserFavorites from "@/components/userprofile/UserFavorites";
 import UserInfo from "@/components/userprofile/UserInfo";
 
-export default function UserProfilePage() { 
+export default function UserProfilePage() {
 
-   async function handleLogout() {
+  async function handleLogout() {
     try {
       const res = await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', credentials: 'include' });
       if (!res.ok) {
@@ -57,15 +57,33 @@ export default function UserProfilePage() {
 
       <div className="flex flex-col md:flex-row">
 
-        <aside className="md:w-1/3 max-w-xs w-full mx-auto md:mx-0 md:h-[100vh] flex flex-col items-center justify-center md:justify-start bg-white shadow-xl rounded-3xl md:rounded-none p-8 md:pt-15 md:pb-12 border-r border-[#e8ede9]">
+        <aside className="
+  w-full
+  md:w-1/3
+  max-w-xs
+  mx-auto
+  md:mx-0
+  flex flex-col
+  items-center
+  justify-center md:justify-start
+  bg-white shadow-xl rounded-3xl md:rounded-none
+  p-8 md:pt-15 md:pb-12
+  border-r border-[#e8ede9]
+  md:fixed
+  md:top-0
+  md:left-0
+  md:h-screen
+  z-30
+">
           <UserInfo />
         </aside>
 
-        <main className="flex-1 px-2 py-10 md:px-8 md:py-16 flex flex-col items-center">
+
+        <main className="flex-1 px-2 py-10 md:px-8 md:py-16 flex flex-col items-center md:ml-[20rem]">
           <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-900 tracking-tight">
             <span className="text-green-500">Your</span> Favourites
           </h2>
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="w-full ">
             <UserFavorites />
           </div>
         </main>
