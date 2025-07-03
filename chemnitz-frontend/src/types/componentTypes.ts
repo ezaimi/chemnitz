@@ -5,4 +5,5 @@ export type HeaderItemsType = {
 export type MenuItemType = {
   label: string;
   target?: string;
+  icon?: React.ReactNode;
 };

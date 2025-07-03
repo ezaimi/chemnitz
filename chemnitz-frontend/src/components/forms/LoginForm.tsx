@@ -1,4 +1,4 @@
-'use client'
+'use'
 import React from 'react'
 import Tooltip from "../general/Tooltip";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -8,6 +8,8 @@ import { useState } from "react";
 import { loginUser } from '@/lib/auth';
 import { useRouter } from "next/navigation";
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 
 
 type Props = {
@@ -20,35 +22,36 @@ function LoginForm({ setActiveForm }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
 
   const handleLogin = async () => {
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      credentials: "include", // for cookies/session
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        credentials: "include", // for cookies/session
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!res.ok) {
-      // Try to extract server error message if any
-      const data = await res.json().catch(() => ({}));
-      const message = data.message || "Login failed";
-      setError(message);
-      throw new Error(message);
+      if (!res.ok) {
+        // Try to extract server error message if any
+        const data = await res.json().catch(() => ({}));
+        const message = data.message || "Login failed";
+        setError(message);
+        throw new Error(message);
+      }
+
+      // Successful login
+      router.push("/");
+    } catch (error: any) {
+      setError(error.message || "Login failed");
+      // Optional: Log error for debugging
+      console.error(error);
     }
-
-    // Successful login
-    router.push("/");
-  } catch (error: any) {
-    setError(error.message || "Login failed");
-    // Optional: Log error for debugging
-    console.error(error);
-  }
-};
+  };
 
 
   return (
@@ -86,10 +89,15 @@ function LoginForm({ setActiveForm }: Props) {
             <div className="mb-4 relative">
               <div className="flex w-full justify-between mb-[2px] text-[rgb(102,102,102)]">
                 <label className="block text-sm mb-1">Password</label>
-                <div className="flex items-center gap-1 mr-2">
-                  <VisibilityOffIcon style={{ fontSize: '14px' }} />
-                  <p className="text-[12px] mt-[3px]">Hide</p>
+                <div className="flex items-center gap-1 mr-2 cursor-pointer select-none" onClick={() => setShowPassword(v => !v)}>
+                  {showPassword ? (
+                    <VisibilityIcon style={{ fontSize: '15px' }} />
+                  ) : (
+                    <VisibilityOffIcon style={{ fontSize: '15px' }} />
+                  )}
+                  <p className="text-[12px] mt-[3px]">{showPassword ? "Hide" : "Show"}</p>
                 </div>
+
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -97,18 +105,19 @@ function LoginForm({ setActiveForm }: Props) {
                 </div>
 
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-[#cacaca] rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200"
+                  className="w-full pl-10 py-2 border border-[#cacaca] rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200"
                 />
+
               </div>
             </div>
 
             <div className='text-[12px]'>
               {error}
             </div>
-            <GreenButton label="Log in" handleLogin={handleLogin}/>
+            <GreenButton label="Log in" handleLogin={handleLogin} />
 
           </div>
         </div>

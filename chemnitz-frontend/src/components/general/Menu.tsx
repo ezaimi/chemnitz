@@ -63,17 +63,27 @@ function Menu({
         <ul className="py-2">
           {menuItems.map((item) => (
             <li key={item.target}>
-              <Link
-                href={`#${item.target}`}
-                onClick={() => handleItemClick(item.label)}
-                className={`block px-4 py-2 transition-colors duration-200 
-        ${activeItem === item.label ? selectedColor : `${textColor} hover:text-gray-300`}`}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveItem(item.label);
+                  setIsDropdownOpen(false);
+                  // Use item.target if provided, else fallback
+                  const targetId = item.target || item.label.toLowerCase();
+                  const section = document.getElementById(targetId);
+                  if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className={`w-full text-left block px-4 py-2 transition-colors duration-200 
+    ${activeItem === item.label ? selectedColor : `${textColor} hover:text-gray-300`}`}
               >
                 <div className='flex gap-2'>
                   <div></div>
                   <div>{item.label}</div>
                 </div>
-              </Link>
+              </button>
+
             </li>
           ))}
 

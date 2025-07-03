@@ -49,9 +49,18 @@ export default function Hero() {
             adventure unite. A place where nature and adventure unite. A place where
             nature and adventure unite. A place where nature and adventure unite.
           </p>
-          <button className="mt-8  text-white border px-14 py-3 rounded-full text-sm font-semibold shadow-lg cursor-pointer hover:bg-white hover:text-black hover:border-transparent">
+          <button
+            className="mt-8 text-white border px-14 py-3 rounded-full text-sm font-semibold shadow-lg cursor-pointer hover:bg-white hover:text-black hover:border-transparent"
+            onClick={() => {
+              const section = document.getElementById('attractions');
+              if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
             See Attractions
           </button>
+
         </div>
       </section>
     </main>

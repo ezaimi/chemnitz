@@ -83,7 +83,7 @@ export default function AttractionsContainer() {
         ref={mapRef}
         className="w-full min-h-[250px] p-10 flex flex-col gap-4 px-2 pt-3 h-[700px]"
       >
-        <div className="flex-1 w-full relative p-10">
+        <div id='map' className="flex-1 w-full relative p-10">
           <Map features={features} selectedFeatureId={selectedFeatureId} />
         </div>
       </div>

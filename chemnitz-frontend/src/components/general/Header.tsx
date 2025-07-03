@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 
@@ -10,15 +10,16 @@ import { MenuItemType } from '@/types/componentTypes';
 import { useUser } from "../AuthPage";
 
 import { User } from '@/types/User';
+import HeaderPlus from "./HeaderPlus";
 
+import { FaHome, FaInfoCircle, FaLandmark, FaMapMarkedAlt, FaEnvelope } from 'react-icons/fa';
 
-export const menuItemData: MenuItemType[] = [
-  { label: 'Home' },
-  { label: 'About' },
-  { label: 'Attractions' },
-  { label: 'Map' },
-  { label: 'Contact' }
-
+const menuItemData: MenuItemType[] = [
+  { label: 'Home', target: 'home', icon: <FaHome /> },
+  { label: 'About', target: 'about', icon: <FaInfoCircle /> },
+  { label: 'Attractions', target: 'attractions', icon: <FaLandmark /> },
+  { label: 'Map', target: 'map', icon: <FaMapMarkedAlt /> },
+  { label: 'Contact', target: 'contact', icon: <FaEnvelope /> },
 ];
 
 
@@ -35,6 +36,28 @@ export default function Header({ headerItems, user }: Props) {
   const router = useRouter();
   const { user: contextUser, setUser } = useUser();
 
+
+
+  console.log('hiuh',contextUser);
+
+  const [showScrollDiv, setShowScrollDiv] = useState(false);
+
+  useEffect(() => {
+    // Handler to call on window scroll
+    const handleScroll = () => {
+      // 3rem = 48px
+      if (window.scrollY > 48) {
+        setShowScrollDiv(true);
+      } else {
+        setShowScrollDiv(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    // Clean up
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   async function handleLogout() {
     try {
       const res = await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', credentials: 'include' });
@@ -50,8 +73,15 @@ export default function Header({ headerItems, user }: Props) {
 
 
   return (
+
+
     <header className="px-4 h-[3rem]">
-      <nav className="lg:px-10 py-0 flex justify-between items-center h-full">
+
+      {showScrollDiv && (
+        <HeaderPlus />
+      )}
+
+      <nav className="lg:px-10 py-0  flex justify-between items-center h-full ">
 
         <div className="flex-1 flex">
           <img src="/assets/icon/headericon.png" alt="" className="w-14" />
@@ -65,8 +95,14 @@ export default function Header({ headerItems, user }: Props) {
             {itemsToRender.map((item) => (
               <li key={item.label}>  {/* Use item.label as the key */}
                 <a
-                  onClick={() => setActiveItem(item.label)}
-                  className={`${activeItem === item.label
+                  onClick={() => {
+                    setActiveItem(item.label);
+                    const targetId = item.label.toLowerCase();
+                    const section = document.getElementById(targetId);
+                    if (section) {
+                      section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }} className={`${activeItem === item.label
                     ? 'text-[#617d4d]'
                     : 'text-gray-700'
                     } block cursor-pointer py-2 pr-4 pl-3 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0`}
@@ -78,6 +114,8 @@ export default function Header({ headerItems, user }: Props) {
           </ul>
 
         </div>
+
+
 
         <div className="flex items-center gap-2 flex-1 justify-end sm:gap-4">
           {contextUser ? (

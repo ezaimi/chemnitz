@@ -13,13 +13,19 @@ export default function Home() {
   return (
     <>
       <div className='bg-[#f4f4f4]'>
-        <Header />
-        <Hero />
+        <div id='home'> <Header />
+          <Hero /></div>
+
+
         <br />
         <br />
         <br />
         <br />
-        <About />
+
+        <div id='about'> <About /></div>
+
+
+
         <br />
         <br />
         <br />
@@ -27,10 +33,12 @@ export default function Home() {
         <br />
         <br />
         <br />
-        <AttractionsContainer />
-      
-        
-        <Footer/>
+
+        <div id='attractions'>        <AttractionsContainer />
+        </div>
+
+        <div id='contact'></div>
+        <Footer />
 
       </div>
     </>

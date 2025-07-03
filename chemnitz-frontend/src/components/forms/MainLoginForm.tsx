@@ -2,17 +2,31 @@ import React from 'react'
 import GreenButton from "../general/GreenButton";
 import Button from '../general/button';
 import GoogleButton from '../general/GoogleButton';
+import Tooltip from "../general/Tooltip";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useRouter } from "next/navigation";
+
 
 type Props = {
     setActiveForm: (form: "login" | "signup" | "main") => void;
 };
 
 function MainLoginForm({ setActiveForm }: Props) {
+    const router = useRouter();
+
     return (
 
         <div className="absolute transition-all duration-500 ease-in-out w-full opacity-100 translate-x-0">
+            <ArrowBackIcon
+                className="absolute top-0 left-0 text-gray-500 cursor-pointer z-10 "
+                style={{ fontSize: 20 }}
+                onClick={() => router.push("/")}
+                titleAccess="Go back to home"
+            />
             <div className="flex w-full flex-col gap-y-[3rem]">
+
                 <div className="flex flex-col w-full items-center text-center mt-[50px]">
+
                     <p className="text-[28px] font-poppins font-bold mt-[-10px]">
                         Discover{" "}
                         <span className="text-transparent bg-clip-text bg-[linear-gradient(to_right,_#7fc081,_#405039)]">
@@ -29,7 +43,7 @@ function MainLoginForm({ setActiveForm }: Props) {
                         <div className="flex-grow border-t border-gray-300"></div>
                     </div>
                     <div className="my-3 mb-0">
-                        <Button label="Sign up with email" onClick={() => setActiveForm("signup")}/>
+                        <Button label="Sign up with email" onClick={() => setActiveForm("signup")} />
                     </div>
                     <p className="text-[10px] text-gray-600 mt-0.5 ml-3">
                         By signing up, you agree to the

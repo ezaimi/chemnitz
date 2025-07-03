@@ -20,6 +20,7 @@ export function useUser() {
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -28,6 +29,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         });
         if (!res.ok) throw new Error();
         const user: User = await res.json();
+        console.log('joj',await res.json());
         setUser(user);
         localStorage.setItem("user", JSON.stringify(user));
       } catch {
